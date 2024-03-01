@@ -28,8 +28,6 @@ func main() {
 	fmt.Println(detectCycle())
 }
 
-
-
 func detectCycle() (bool, error) {
 	// Fetch all rows from the table
 	var rows []models.EmployeeManager
@@ -44,7 +42,7 @@ func detectCycle() (bool, error) {
 	}
 	_, err := DB.QueryOne(&result, `SELECT GREATEST(MAX(employee_id) , MAX(manager_id) ) AS max_id FROM employee_managers`)
 	if err != nil {
-		fmt.Println("can't get max eid and max mid");
+		fmt.Println("can't get max eid and max mid")
 		return false, err
 	}
 
@@ -53,12 +51,19 @@ func detectCycle() (bool, error) {
 	for _, row := range rows {
 		graph[row.EmployeeID] = append(graph[row.EmployeeID], row.ManagerID)
 	}
-	
+
+	var empID, managerID uint64
+	fmt.Println("Enter the empID :")
+	fmt.Scanln(&empID)
+	fmt.Println("Enter the managerID :")
+	fmt.Scanln(&managerID)
+	graph[empID] = append(graph[empID], managerID)
+
 	//checking if graph has cycle
 	var vis = make([]bool, result.MaxID+1)
 	var dfs_visit = make([]bool, result.MaxID+1)
-	
-	for k := range graph{
+
+	for k := range graph {
 		if !vis[k] && hasCycle(k, vis, dfs_visit, graph) {
 			return true, nil
 		}
@@ -66,12 +71,10 @@ func detectCycle() (bool, error) {
 	return false, nil
 }
 
-
-
 func hasCycle(v uint64, vis []bool, dfs_vis []bool, g map[uint64][]uint64) bool {
-	vis[v] = true;
-	dfs_vis[v] = true;
-	for _,nb := range g[v] {
+	vis[v] = true
+	dfs_vis[v] = true
+	for _, nb := range g[v] {
 		if !vis[nb] {
 			if hasCycle(nb, vis, dfs_vis, g) {
 				return true
@@ -80,6 +83,6 @@ func hasCycle(v uint64, vis []bool, dfs_vis []bool, g map[uint64][]uint64) bool 
 			return true
 		}
 	}
-	dfs_vis[v] = false;
+	dfs_vis[v] = false
 	return false
 }
