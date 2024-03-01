@@ -58,6 +58,12 @@ func detectCycle() (bool, error) {
 	fmt.Println("Enter the managerID :")
 	fmt.Scanln(&managerID)
 	graph[empID] = append(graph[empID], managerID)
+	if empID > result.MaxID {
+		result.MaxID = empID;
+	}
+	if(managerID > result.MaxID){
+		result.MaxID = managerID;
+	}
 
 	//checking if graph has cycle
 	var vis = make([]bool, result.MaxID+1)
